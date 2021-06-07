@@ -147,7 +147,7 @@ def game_cycle():
 
     game = True
     cactus_arr = []
-    create_cactus_arr(cactus_arr)
+    create_obstacle_arr(cactus_arr)
     land = pygame.image.load('Land.png')
 
     stone, cloud = open_random_objects()
@@ -207,7 +207,7 @@ def jump():
         make_jump = False
 
 
-def create_cactus_arr(array):
+def create_obstacle_arr(array):
     choice = random.randrange(0, 3)
     img = obstacle_img[choice]
     width = obstacle_options[choice * 2]
