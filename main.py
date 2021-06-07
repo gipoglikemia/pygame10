@@ -7,25 +7,29 @@ display_width = 800
 display_height = 600
 
 display = pygame.display.set_mode((display_width, display_height))
-pygame.display.set_caption('Run Dino! Run!')
+pygame.display.set_caption('My little Morty')
 
 loss_sound = pygame.mixer.Sound('loss.wav')
 fall_sound = pygame.mixer.Sound('Bdish.wav')
-jump_sound = pygame.mixer.Sound('Rrr.wav')
+jump_sound = pygame.mixer.Sound('hihi.wav')
 heart_plus_sound = pygame.mixer.Sound('pow5.wav')
 button_sound = pygame.mixer.Sound('button.wav')
 
 icon = pygame.image.load('favicon_32x32.png')
 pygame.display.set_icon(icon)
 
-cactus_img = [pygame.image.load(r'Cactus0.png'), pygame.image.load(r'Cactus1.png'), pygame.image.load(r'Cactus2.png')]
-cactus_options = [69, 449, 37, 410, 40, 420]
+obstacle_img = [pygame.image.load(r'blockerMad.png'), pygame.image.load('pokerMad.png'),
+                pygame.image.load(r'Cactus2.png')]
+obstacle_options = [69, 449, 37, 410, 40, 420]
 
 stone_img = [pygame.image.load('Stone0.png'), pygame.image.load('Stone1.png')]
 cloud_img = [pygame.image.load('Cloud0.png'), pygame.image.load('Cloud1.png')]
 
-dino_img = [pygame.image.load(r'Dino0.png'), pygame.image.load(r'Dino1.png'), pygame.image.load(r'Dino2.png'),
-            pygame.image.load(r'Dino3.png'), pygame.image.load(r'Dino4.png')]
+morty_img = [pygame.image.load('p1_walk01.png'),
+             pygame.image.load('p1_walk02.png'),
+             pygame.image.load('p1_walk03.png'),
+             pygame.image.load('p1_walk04.png'),
+             pygame.image.load('p1_walk05.png')]
 
 health_img = pygame.image.load('heart.png')
 health_img = pygame.transform.scale(health_img, (30, 30))
@@ -87,17 +91,17 @@ class Button:
         print_text(message=message, x=x + 10, y=y + 10, font_size=font_size)
 
 
-usr_width = 60
-usr_height = 100
-usr_x = display_width // 3
-usr_y = display_height - usr_height - 100
+morty_width = 60
+morty_height = 100
+morty_x = display_width // 3
+morty_y = display_height - morty_height - 95
 
 clock = pygame.time.Clock()
 
 cactus_width = 20
 cactus_height = 70
 cactus_x = display_width - 50
-cactus_y = display_height - cactus_height - 100
+cactus_y = display_height - cactus_height - 75
 
 make_jump = False
 jump_counter = 30
@@ -108,7 +112,7 @@ max_above = 0
 
 
 def show_menu():
-    menu_bckgr = pygame.image.load('Menu.jpg')
+    menu_bckgr = pygame.image.load('Menu.png')
 
     start_btn = Button(288, 70)
     quit_btn = Button(120, 70)
@@ -129,12 +133,12 @@ def show_menu():
 
 
 def start_game():
-    global scores, make_jump, jump_counter, usr_y, health
+    global scores, make_jump, jump_counter, morty_y, health
     while game_cycle():
         scores = 0
         make_jump = False
         jump_counter = 30
-        usr_y = display_height - usr_height - 100
+        morty_y = display_height - morty_height - 100
         health = 2
 
 
@@ -144,7 +148,7 @@ def game_cycle():
     game = True
     cactus_arr = []
     create_cactus_arr(cactus_arr)
-    land = pygame.image.load('Land.jpg')
+    land = pygame.image.load('Land.png')
 
     stone, cloud = open_random_objects()
     heart = Object(display_width, 280, 30, health_img, 4)
@@ -167,7 +171,7 @@ def game_cycle():
         draw_array(cactus_arr)
         move_objects(stone, cloud)
 
-        draw_dino()
+        draw_morty()
 
         if keys[pygame.K_ESCAPE]:
             pause()
@@ -189,14 +193,14 @@ def game_cycle():
 
 
 def jump():
-    global usr_y, jump_counter, make_jump
+    global morty_y, jump_counter, make_jump
     if jump_counter >= -30:
         if jump_counter == 30:
             pygame.mixer.Sound.play(jump_sound)
         if jump_counter == -30:
             pygame.mixer.Sound.play(fall_sound)
 
-        usr_y -= jump_counter / 2.5
+        morty_y -= jump_counter / 2.5
         jump_counter -= 1
     else:
         jump_counter = 30
@@ -205,21 +209,21 @@ def jump():
 
 def create_cactus_arr(array):
     choice = random.randrange(0, 3)
-    img = cactus_img[choice]
-    width = cactus_options[choice * 2]
-    height = cactus_options[choice * 2 + 1]
+    img = obstacle_img[choice]
+    width = obstacle_options[choice * 2]
+    height = obstacle_options[choice * 2 + 1]
     array.append(Object(display_width + 20, height, width, img, 4))
 
     choice = random.randrange(0, 3)
-    img = cactus_img[choice]
-    width = cactus_options[choice * 2]
-    height = cactus_options[choice * 2 + 1]
+    img = obstacle_img[choice]
+    width = obstacle_options[choice * 2]
+    height = obstacle_options[choice * 2 + 1]
     array.append(Object(display_width + 300, height, width, img, 4))
 
     choice = random.randrange(0, 3)
-    img = cactus_img[choice]
-    width = cactus_options[choice * 2]
-    height = cactus_options[choice * 2 + 1]
+    img = obstacle_img[choice]
+    width = obstacle_options[choice * 2]
+    height = obstacle_options[choice * 2 + 1]
     array.append(Object(display_width + 600, height, width, img, 4))
 
 
@@ -228,7 +232,7 @@ def find_radius(array):
 
     if maximum < display_width:
         radius = display_width
-        if radius - maximum < 50:
+        if radius - maximum < 20:
             radius += 270
     else:
         radius = maximum
@@ -253,9 +257,9 @@ def object_return(objects, obj):
     radius = find_radius(objects)
 
     choice = random.randrange(0, 3)
-    img = cactus_img[choice]
-    width = cactus_options[choice * 2]
-    height = cactus_options[choice * 2 + 1]
+    img = obstacle_img[choice]
+    width = obstacle_options[choice * 2]
+    height = obstacle_options[choice * 2 + 1]
 
     obj.return_self(radius, height, width, img)
 
@@ -287,12 +291,12 @@ def move_objects(stone, cloud):
         cloud.return_self(display_width, random.randrange(10, 200), stone.width, img_of_cloud)
 
 
-def draw_dino():
+def draw_morty():
     global img_counter
     if img_counter == 25:
         img_counter = 0
 
-    display.blit(dino_img[img_counter // 5], (usr_x, usr_y))
+    display.blit(morty_img[img_counter // 5], (morty_x, morty_y))
     img_counter += 1
 
 
@@ -325,23 +329,23 @@ def check_collision(barriers):
     for barrier in barriers:
         if barrier.y == 449:
             if not make_jump:
-                if barrier.x <= usr_x + usr_width - 35 <= barrier.x + barrier.width:
+                if barrier.x <= morty_x + morty_width - 35 <= barrier.x + barrier.width:
                     if check_health():
                         object_return(barriers, barrier)
                         return False
                     else:
                         return True
             elif jump_counter >= 0:
-                if usr_y + usr_height - 5 >= barrier.y:
-                    if barrier.x <= usr_x + usr_width - 25 <= barrier.x + barrier.width:
+                if morty_y + morty_height - 5 >= barrier.y:
+                    if barrier.x <= morty_x + morty_width - 25 <= barrier.x + barrier.width:
                         if check_health():
                             object_return(barriers, barrier)
                             return False
                         else:
                             return True
             else:
-                if usr_y + usr_height - 10 >= barrier.y:
-                    if barrier.x <= usr_x <= barrier.x + barrier.width:
+                if morty_y + morty_height - 10 >= barrier.y:
+                    if barrier.x <= morty_x <= barrier.x + barrier.width:
                         if check_health():
                             object_return(barriers, barrier)
                             return False
@@ -349,31 +353,31 @@ def check_collision(barriers):
                             return True
         else:
             if not make_jump:
-                if barrier.x <= usr_x + usr_width - 5 <= barrier.x + barrier.width:
+                if barrier.x <= morty_x + morty_width - 5 <= barrier.x + barrier.width:
                     if check_health():
                         object_return(barriers, barrier)
                         return False
                     else:
                         return True
             elif jump_counter == 10:
-                if usr_y + usr_height - 5 >= barrier.y:
-                    if barrier.x <= usr_x + usr_width - 5 <= barrier.x + barrier.width:
+                if morty_y + morty_height - 5 >= barrier.y:
+                    if barrier.x <= morty_x + morty_width - 5 <= barrier.x + barrier.width:
                         if check_health():
                             object_return(barriers, barrier)
                             return False
                         else:
                             return True
             elif jump_counter >= -1:
-                if usr_y + usr_height - 5 >= barrier.y:
-                    if barrier.x <= usr_x + usr_width - 25 <= barrier.x + barrier.width:
+                if morty_y + morty_height - 5 >= barrier.y:
+                    if barrier.x <= morty_x + morty_width - 25 <= barrier.x + barrier.width:
                         if check_health():
                             object_return(barriers, barrier)
                             return False
                         else:
                             return True
                 else:
-                    if usr_y + usr_height - 10 >= barrier.y:
-                        if barrier.x <= usr_x + 5 <= barrier.x + barrier.width:
+                    if morty_y + morty_height - 10 >= barrier.y:
+                        if barrier.x <= morty_x + 5 <= barrier.x + barrier.width:
                             if check_health():
                                 object_return(barriers, barrier)
                                 return False
@@ -388,10 +392,10 @@ def count_scores(barriers):
 
     if -20 <= jump_counter < 25:
         for barrier in barriers:
-            if usr_y + usr_height - 5 <= barrier.y:
-                if barrier.x <= usr_x <= barrier.x + barrier.width:
+            if morty_y + morty_height - 5 <= barrier.y:
+                if barrier.x <= morty_x <= barrier.x + barrier.width:
                     above_cactus += 1
-                elif barrier.x <= usr_x + usr_width <= barrier.x + barrier.width:
+                elif barrier.x <= morty_x + morty_width <= barrier.x + barrier.width:
                     above_cactus += 1
 
         max_above = max(max_above, above_cactus)
@@ -448,14 +452,14 @@ def check_health():
 
 
 def hearts_plus(heart):
-    global health, usr_x, usr_y, usr_width, usr_height
+    global health, morty_x, morty_y, morty_width, morty_height
 
     if heart.x <= -heart.width:
         radius = display_width + random.randrange(800, 1800)
         heart.return_self(radius, heart.y, heart.width, heart.image)
 
-    if usr_x <= heart.x <= usr_x + usr_width:
-        if usr_y <= heart.y <= usr_y + usr_height:
+    if morty_x <= heart.x <= morty_x + morty_width:
+        if morty_y <= heart.y <= morty_y + morty_height:
             pygame.mixer.Sound.play(heart_plus_sound)
             if health < 5:
                 health += 1
